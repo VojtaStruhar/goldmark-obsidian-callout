@@ -4,25 +4,13 @@ import (
 	"regexp"
 
 	calloutAst "github.com/VojtaStruhar/goldmark-callout/ast"
+	"github.com/VojtaStruhar/goldmark-callout/helper"
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 )
 
 var calloutRegex = regexp.MustCompile(`^\[!(\w+)\]([+-])?(.*)\n$`)
-
-type calloutType int
-
-const (
-	Info calloutType = iota
-	Important
-)
-
-var calloutTypeMapping = map[string]calloutType{
-	"!info":      Info,
-	"!important": Important,
-	"!tip":       Important,
-}
 
 type calloutParagraphTransformer struct {
 }
@@ -49,17 +37,17 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 
 	callout := calloutAst.NewCallout()
 
-	closingBracketIndex, err := indexOf(firstLineBytes, byte(']'))
+	closingBracketIndex, err := helper.IndexOf(firstLineBytes, byte(']'))
 	if err != nil {
 		return
 	}
-	openingBracketIndex, err := indexOf(firstLineBytes, byte('['))
+	openingBracketIndex, err := helper.IndexOf(firstLineBytes, byte('['))
 	if err != nil {
 		return
 	}
 
 	cName := string(firstLineBytes[openingBracketIndex+1 : closingBracketIndex])
-	cType := calloutTypeMapping[cName]
+	cType := helper.CalloutTypeMapping[cName]
 	callout.SetAttribute([]byte("type"), cType)
 
 	node.Parent().ReplaceChild(node.Parent(), node, callout)

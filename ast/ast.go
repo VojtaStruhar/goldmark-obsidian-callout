@@ -1,6 +1,9 @@
 package ast
 
 import (
+	"strings"
+
+	"github.com/VojtaStruhar/goldmark-callout/helper"
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/util"
@@ -71,7 +74,21 @@ func (r *CalloutHtmlRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegiste
 
 func (r *CalloutHtmlRenderer) renderCallout(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
-		_, _ = w.WriteString("<details class=\"callout\" data-callout=\"info\">\n")
+		// Set the default 'data-callout' for css
+
+		// note by default
+		calloutType := helper.Note
+		if t, ok := n.Attribute([]byte("type")); ok {
+			calloutType = t.(helper.CalloutType)
+		}
+		calloutTypeString := helper.CalloutTypeStringMapping[calloutType]
+
+		b := strings.Builder{}
+		b.WriteString("<details class=\"callout\" data-callout=\"")
+		b.WriteString(calloutTypeString)
+		b.WriteString("\">\n")
+
+		_, _ = w.WriteString(b.String())
 	} else {
 		_, _ = w.WriteString("</details>\n")
 	}

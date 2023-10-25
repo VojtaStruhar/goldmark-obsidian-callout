@@ -48,4 +48,23 @@ func TestBlockquote(t *testing.T) {
 </details>
 `,
 	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Empty callout - important type",
+		Markdown: `
+> [!tip]
+`,
+		Expected: `
+<details class="callout" data-callout="tip">
+<summary>
+<p>
+
+</p>
+</summary>
+</details>
+`,
+	}, t)
+
 }
