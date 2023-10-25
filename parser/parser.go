@@ -1,52 +1,48 @@
 package parser
 
 import (
-	"fmt"
 	"regexp"
 
-	fast "github.com/mangoumbrella/goldmark-figure/ast"
+	callout_ast "github.com/VojtaStruhar/goldmark-callout/ast"
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 )
 
-var imageRegexp = regexp.MustCompile(`^\[!(\w+)\]([+-])?(.*)\n$`)
+var calloutRegex = regexp.MustCompile(`^\[!(\w+)\]([+-])?(.*)\n$`)
 
-type figureParagraphTransformer struct {
+type calloutParagraphTransformer struct {
 }
 
-var defaultFigureParagraphTransformer = &figureParagraphTransformer{}
+var defaultCalloutTransformer = &calloutParagraphTransformer{}
 
-// NewFigureParagraphTransformer returns a new ParagraphTransformer
+// NewCalloutParagraphTransformer returns a new ParagraphTransformer
 // that can transform paragraphs into figures.
-func NewFigureParagraphTransformer() parser.ParagraphTransformer {
-	return defaultFigureParagraphTransformer
+func NewCalloutParagraphTransformer() parser.ParagraphTransformer {
+	return defaultCalloutTransformer
 }
 
-func (b *figureParagraphTransformer) Transform(node *gast.Paragraph, reader text.Reader, pc parser.Context) {
+func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader text.Reader, pc parser.Context) {
 	lines := node.Lines()
 	if lines.Len() < 1 {
 		return
 	}
-	var first_seg = lines.At(0)
-	var first_line_str = first_seg.Value(reader.Source())
-	// Here we simply match by regex.
-	// But this simple regex ignores image descriptions that contain other links.
-	// E.g. ![foo ![bar](/url)](/url2).
-	// See CommonMark spec: https://spec.commonmark.org/0.30/#images.
-	if !imageRegexp.Match(first_line_str) {
+	var firstSegment = lines.At(0)
+	var firstLineString = firstSegment.Value(reader.Source())
+
+	if !calloutRegex.Match(firstLineString) {
 		return
 	}
-	fmt.Println("We got a match!", string(first_line_str))
-	figure := fast.NewFigure()
-	node.Parent().ReplaceChild(node.Parent(), node, figure)
 
-	figureImage := fast.NewFigureImage()
+	callout := callout_ast.NewCallout()
+	node.Parent().ReplaceChild(node.Parent(), node, callout)
+
+	figureImage := callout_ast.NewCalloutTitle()
 	figureImage.Lines().Append(lines.At(0))
-	figure.AppendChild(figure, figureImage)
+	callout.AppendChild(callout, figureImage)
 
 	if lines.Len() >= 2 {
-		figureCaption := fast.NewFigureCaption()
+		figureCaption := callout_ast.NewCalloutTitle()
 		for i := 1; i < lines.Len(); i++ {
 			seg := lines.At(i)
 			if i == lines.Len()-1 {
@@ -55,19 +51,19 @@ func (b *figureParagraphTransformer) Transform(node *gast.Paragraph, reader text
 			}
 			figureCaption.Lines().Append(seg)
 		}
-		figure.AppendChild(figure, figureCaption)
+		callout.AppendChild(callout, figureCaption)
 	}
 }
 
-type figureASTTransformer struct {
+type calloutAstTransformer struct {
 }
 
-var defaultFigureASTTransformer = &figureASTTransformer{}
+var defaultCalloutAstTransformer = &calloutAstTransformer{}
 
-// NewFigureASTTransformer returns a parser.ASTTransformer for tables.
-func NewFigureASTTransformer() parser.ASTTransformer {
-	return defaultFigureASTTransformer
+// NewCalloutAstTransformer returns a parser.ASTTransformer for tables.
+func NewCalloutAstTransformer() parser.ASTTransformer {
+	return defaultCalloutAstTransformer
 }
 
-func (a *figureASTTransformer) Transform(node *gast.Document, reader text.Reader, pc parser.Context) {
+func (a *calloutAstTransformer) Transform(node *gast.Document, reader text.Reader, pc parser.Context) {
 }

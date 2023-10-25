@@ -6,95 +6,70 @@ import (
 	"github.com/yuin/goldmark/util"
 )
 
-// KindFigure is a NodeKind of the Figure node.
-var KindFigure = gast.NewNodeKind("Figure")
+// KindCallout is a NodeKind of the Callout node.
+var KindCallout = gast.NewNodeKind("Callout")
 
-// A Figure struct represents a table of Markdown(GFM) text.
-type Figure struct {
+// A Callout struct represents a table of Markdown(GFM) text.
+type Callout struct {
 	gast.BaseBlock
 }
 
 // Kind implements Node.Kind.
-func (n *Figure) Kind() gast.NodeKind {
-	return KindFigure
+func (n *Callout) Kind() gast.NodeKind {
+	return KindCallout
 }
 
 // Dump implements Node.Dump
-func (n *Figure) Dump(source []byte, level int) {
+func (n *Callout) Dump(source []byte, level int) {
 	gast.DumpHelper(n, source, level, nil, func(level int) {
 	})
 }
 
-// NewFigure returns a new Table node.
-func NewFigure() *Figure {
-	return &Figure{}
+// NewCallout returns a new Table node.
+func NewCallout() *Callout {
+	return &Callout{}
 }
 
-// KindFigureImage is a NodeKind of the FigureImage node.
-var KindFigureImage = gast.NewNodeKind("FigureImage")
+// KindCalloutTitle is a NodeKind of the CalloutTitle node.
+var KindCalloutTitle = gast.NewNodeKind("CalloutTitle")
 
-// A FigureImage struct represents a table of Markdown(GFM) text.
-type FigureImage struct {
+// A CalloutTitle struct represents a table of Markdown(GFM) text.
+type CalloutTitle struct {
 	gast.BaseBlock
 }
 
 // Kind implements Node.Kind.
-func (n *FigureImage) Kind() gast.NodeKind {
-	return KindFigureImage
+func (n *CalloutTitle) Kind() gast.NodeKind {
+	return KindCalloutTitle
 }
 
 // Dump implements Node.Dump
-func (n *FigureImage) Dump(source []byte, level int) {
-	gast.DumpHelper(n, source, level, nil, func(level int) {
-	})
+func (n *CalloutTitle) Dump(source []byte, level int) {
+	gast.DumpHelper(n, source, level, nil, func(level int) {})
 }
 
-// NewFigureImage returns a new Table node.
-func NewFigureImage() *FigureImage {
-	return &FigureImage{}
+// NewCalloutTitle returns a new Table node.
+func NewCalloutTitle() *CalloutTitle {
+	return &CalloutTitle{}
 }
 
-// KindFigureCaption is a NodeKind of the FigureCaption node.
-var KindFigureCaption = gast.NewNodeKind("FigureCaption")
-
-// A FigureCaption struct represents a table of Markdown(GFM) text.
-type FigureCaption struct {
-	gast.BaseBlock
+// CalloutHtmlRenderer is a renderer.NodeRenderer implementation that
+// renders Callout nodes.
+type CalloutHtmlRenderer struct {
 }
 
-// Kind implements Node.Kind.
-func (n *FigureCaption) Kind() gast.NodeKind {
-	return KindFigureCaption
-}
-
-// Dump implements Node.Dump
-func (n *FigureCaption) Dump(source []byte, level int) {
-	gast.DumpHelper(n, source, level, nil, func(level int) {
-	})
-}
-
-// NewFigureCaption returns a new Table node.
-func NewFigureCaption() *FigureCaption {
-	return &FigureCaption{}
-}
-
-// FigureHTMLRenderer is a renderer.NodeRenderer implementation that
-// renders Figure nodes.
-type FigureHTMLRenderer struct {
-}
-
-// NewFigureHTMLRenderer returns a new FigureHTMLRenderer.
-func NewFigureHTMLRenderer() renderer.NodeRenderer {
-	return &FigureHTMLRenderer{}
+// NewCalloutHtmlRenderer returns a new CalloutHtmlRenderer.
+func NewCalloutHtmlRenderer() renderer.NodeRenderer {
+	return &CalloutHtmlRenderer{}
 }
 
 // RegisterFuncs implements renderer.NodeRenderer.RegisterFuncs.
-func (r *FigureHTMLRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
-	reg.Register(KindFigure, r.renderFigure)
-	reg.Register(KindFigureCaption, r.renderFigureCaption)
+func (r *CalloutHtmlRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
+	reg.Register(KindCallout, r.renderCallout)
+	reg.Register(KindCalloutTitle, r.renderCalloutTitle)
 }
 
-func (r *FigureHTMLRenderer) renderFigure(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
+func (r *CalloutHtmlRenderer) renderCallout(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
 		_, _ = w.WriteString("<figure>\n")
 	} else {
@@ -103,7 +78,7 @@ func (r *FigureHTMLRenderer) renderFigure(w util.BufWriter, source []byte, n gas
 	return gast.WalkContinue, nil
 }
 
-func (r *FigureHTMLRenderer) renderFigureCaption(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
+func (r *CalloutHtmlRenderer) renderCalloutTitle(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
 		_, _ = w.WriteString("<figcaption><p>")
 	} else {

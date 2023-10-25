@@ -1,4 +1,4 @@
-module github.com/mangoumbrella/goldmark-figure
+module github.com/VojtaStruhar/goldmark-callout
 
 go 1.18
 

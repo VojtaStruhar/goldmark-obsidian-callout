@@ -6,13 +6,13 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/testutil"
 
-	figure "github.com/mangoumbrella/goldmark-figure"
+	callout "github.com/VojtaStruhar/goldmark-callout"
 )
 
 func TestBlockquote(t *testing.T) {
 	markdown := goldmark.New(
 		goldmark.WithExtensions(
-			figure.Figure,
+			callout.ObsidianCallout,
 		),
 	)
 	count := 0
