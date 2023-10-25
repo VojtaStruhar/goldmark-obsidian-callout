@@ -1,0 +1,5 @@
+# goldmark-callout
+
+## License
+
+MIT
