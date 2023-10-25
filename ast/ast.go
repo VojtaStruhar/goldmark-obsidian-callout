@@ -71,18 +71,18 @@ func (r *CalloutHtmlRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegiste
 
 func (r *CalloutHtmlRenderer) renderCallout(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
-		_, _ = w.WriteString("<figure>\n")
+		_, _ = w.WriteString("<details class=\"callout\" data-callout=\"info\">\n")
 	} else {
-		_, _ = w.WriteString("</figure>\n")
+		_, _ = w.WriteString("</details>\n")
 	}
 	return gast.WalkContinue, nil
 }
 
 func (r *CalloutHtmlRenderer) renderCalloutTitle(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
-		_, _ = w.WriteString("<figcaption><p>")
+		_, _ = w.WriteString("<summary>\n<p>\n")
 	} else {
-		_, _ = w.WriteString("</p></figcaption>\n")
+		_, _ = w.WriteString("</p>\n</summary>\n")
 	}
 	return gast.WalkContinue, nil
 }
