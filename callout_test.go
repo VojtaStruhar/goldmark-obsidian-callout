@@ -6,7 +6,7 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/testutil"
 
-	callout "github.com/VojtaStruhar/goldmark-callout"
+	callout "github.com/VojtaStruhar/goldmark-obsidian-callout"
 )
 
 var markdown = goldmark.New(

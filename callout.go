@@ -1,13 +1,13 @@
 package callout
 
 import (
-	"github.com/VojtaStruhar/goldmark-callout/ast"
+	"github.com/VojtaStruhar/goldmark-obsidian-callout/ast"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/util"
 
-	calloutParser "github.com/VojtaStruhar/goldmark-callout/parser"
+	calloutParser "github.com/VojtaStruhar/goldmark-obsidian-callout/parser"
 )
 
 type obsidianCalloutExtension struct {

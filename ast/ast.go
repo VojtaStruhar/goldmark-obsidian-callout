@@ -3,7 +3,7 @@ package ast
 import (
 	"strings"
 
-	"github.com/VojtaStruhar/goldmark-callout/helper"
+	"github.com/VojtaStruhar/goldmark-obsidian-callout/helper"
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/util"

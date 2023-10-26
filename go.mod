@@ -1,4 +1,4 @@
-module github.com/VojtaStruhar/goldmark-callout
+module github.com/VojtaStruhar/goldmark-obsidian-callout
 
 go 1.18
 

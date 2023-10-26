@@ -3,8 +3,8 @@ package parser
 import (
 	"regexp"
 
-	calloutAst "github.com/VojtaStruhar/goldmark-callout/ast"
-	"github.com/VojtaStruhar/goldmark-callout/helper"
+	calloutAst "github.com/VojtaStruhar/goldmark-obsidian-callout/ast"
+	"github.com/VojtaStruhar/goldmark-obsidian-callout/helper"
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
