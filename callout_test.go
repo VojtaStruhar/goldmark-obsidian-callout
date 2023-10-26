@@ -78,7 +78,7 @@ func TestCalloutContent(t *testing.T) {
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
 		No:          count,
-		Description: "Callout With custom title",
+		Description: "Callout with paragraph content",
 		Markdown: `
 > [!info]
 > Some content here
@@ -92,4 +92,44 @@ func TestCalloutContent(t *testing.T) {
 </details>
 `,
 	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout with formatted paragraph content",
+		Markdown: `
+> [!info]
+> **Bold** and *emphasis* formatting still works
+`,
+		Expected: `<details class="callout" data-callout="info">
+<summary>
+<p>
+</p>
+</summary>
+<p><strong>Bold</strong> and <em>emphasis</em> formatting still works</p>
+</details>
+`,
+	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout with multiple paragraphs",
+		Markdown: `
+> [!info]
+> More paragraphs
+> 
+> In a single callout
+`,
+		Expected: `<details class="callout" data-callout="info">
+<summary>
+<p>
+</p>
+</summary>
+<p>More paragraphs</p>
+<p>In a single callout</p>
+</details>
+`,
+	}, t)
+
 }

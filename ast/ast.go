@@ -74,8 +74,6 @@ func (r *CalloutHtmlRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegiste
 
 func (r *CalloutHtmlRenderer) renderCallout(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
-		// Set the default 'data-callout' for css
-
 		// note by default
 		calloutType := helper.Note
 		if t, ok := n.Attribute([]byte("type")); ok {

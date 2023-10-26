@@ -26,6 +26,7 @@ func (f *obsidianCalloutExtension) Extend(m goldmark.Markdown) {
 		),
 	)
 	m.Renderer().AddOptions(renderer.WithNodeRenderers(
+		// Priority is at 0, because we are rendering our own node kind. Anyone can override us.
 		util.Prioritized(ast.NewCalloutHtmlRenderer(), 0),
 	))
 }

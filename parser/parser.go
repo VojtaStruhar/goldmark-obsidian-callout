@@ -31,51 +31,60 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 	var firstSegment = lines.At(0)
 	var firstLineBytes = firstSegment.Value(reader.Source())
 
-	if !calloutRegex.Match(firstLineBytes) {
+	// Greedy!
+	// If previous sibling is Callout, append this paragraph to the callout
+	if node.PreviousSibling() != nil && node.PreviousSibling().Kind() == calloutAst.KindCallout {
+		callout := node.PreviousSibling()
+		node.Parent().RemoveChild(node.Parent(), node)
+		callout.AppendChild(callout, node)
 		return
 	}
 
-	callout := calloutAst.NewCallout()
-	calloutTitle := calloutAst.NewCalloutTitle()
+	// If this paragraph begins with the [!callout] tag
+	if calloutRegex.Match(firstLineBytes) {
 
-	closingBracketIndex, err := helper.IndexOf(firstLineBytes, byte(']'))
-	if err != nil {
-		return
-	}
-	openingBracketIndex, err := helper.IndexOf(firstLineBytes, byte('['))
-	if err != nil {
-		return
-	}
+		callout := calloutAst.NewCallout()
+		calloutTitle := calloutAst.NewCalloutTitle()
 
-	cName := string(firstLineBytes[openingBracketIndex+1 : closingBracketIndex])
-	cType := helper.CalloutTypeMapping[cName]
-	callout.SetAttribute([]byte("type"), cType)
-
-	node.Parent().ReplaceChild(node.Parent(), node, callout)
-
-	titleTextSegment := lines.At(0)
-	// TODO: handle "+- " after the [!callout_type]
-	shift := closingBracketIndex + 1
-	titleTextSegment.Start += shift
-	// trim the last newline
-	titleTextSegment.Stop = titleTextSegment.Stop - 1
-	// TODO: Rather than leaving the title text empty, supply a capitalized callout type
-	calloutTitle.Lines().Append(titleTextSegment)
-
-	callout.AppendChild(callout, calloutTitle)
-
-	// If the callout has some content
-	if lines.Len() >= 2 {
-		figureCaption := gast.NewParagraph()
-		for i := 1; i < lines.Len(); i++ {
-			seg := lines.At(i)
-			if i == lines.Len()-1 {
-				// trim last newline (\n)
-				seg.Stop = seg.Stop - 1
-			}
-			figureCaption.Lines().Append(seg)
+		closingBracketIndex, err := helper.IndexOf(firstLineBytes, byte(']'))
+		if err != nil {
+			return
 		}
-		callout.AppendChild(callout, figureCaption)
+		openingBracketIndex, err := helper.IndexOf(firstLineBytes, byte('['))
+		if err != nil {
+			return
+		}
+
+		cName := string(firstLineBytes[openingBracketIndex+1 : closingBracketIndex])
+		cType := helper.CalloutTypeMapping[cName]
+		callout.SetAttribute([]byte("type"), cType)
+
+		node.Parent().ReplaceChild(node.Parent(), node, callout)
+
+		titleTextSegment := lines.At(0)
+		// TODO: handle "+- " after the [!callout_type]
+		shift := closingBracketIndex + 1
+		titleTextSegment.Start += shift
+		// trim the last newline
+		titleTextSegment.Stop = titleTextSegment.Stop - 1
+		// TODO: Rather than leaving the title text empty, supply a capitalized callout type
+		calloutTitle.Lines().Append(titleTextSegment)
+
+		callout.AppendChild(callout, calloutTitle)
+
+		// If the callout has some content
+		if lines.Len() >= 2 {
+			calloutContent := gast.NewParagraph()
+			for i := 1; i < lines.Len(); i++ {
+				seg := lines.At(i)
+				if i == lines.Len()-1 {
+					// trim last newline (\n)
+					seg.Stop = seg.Stop - 1
+				}
+				calloutContent.Lines().Append(seg)
+			}
+			callout.AppendChild(callout, calloutContent)
+		}
 	}
 }
 
