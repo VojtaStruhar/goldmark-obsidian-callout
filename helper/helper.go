@@ -83,8 +83,8 @@ var CalloutTypeStringMapping = map[CalloutType]string{
 type CalloutOpeningMode int
 
 const (
-	OpenByDefault CalloutOpeningMode = iota
-	ForceOpen                        // default
+	ForceOpen CalloutOpeningMode = iota // default
+	OpenByDefault
 	ClosedByDefault
 )
 
@@ -100,6 +100,6 @@ func (state CalloutOpeningMode) GetHtmlProps() string {
 		return ` open onclick="return false"`
 	}
 
-	fmt.Println("Unknown CalloutOpeningMode:", state)
+	fmt.Println("WARNING: Unknown CalloutOpeningMode:", state)
 	return ""
 }
