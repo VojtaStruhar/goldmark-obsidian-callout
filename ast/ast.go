@@ -95,9 +95,9 @@ func (r *CalloutHtmlRenderer) renderCallout(w util.BufWriter, source []byte, n g
 
 func (r *CalloutHtmlRenderer) renderCalloutTitle(w util.BufWriter, source []byte, n gast.Node, entering bool) (gast.WalkStatus, error) {
 	if entering {
-		_, _ = w.WriteString("<summary>\n<p>\n")
+		_, _ = w.WriteString("<summary>\n")
 	} else {
-		_, _ = w.WriteString("</p>\n</summary>\n")
+		_, _ = w.WriteString("</summary>\n")
 	}
 	return gast.WalkContinue, nil
 }

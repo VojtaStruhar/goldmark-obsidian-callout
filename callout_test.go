@@ -51,8 +51,7 @@ func TestEmptyCallouts(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="info">
 <summary>
-<p>
- Custom callout title</p>
+ Custom callout title
 </summary>
 </details>
 `,
@@ -67,8 +66,7 @@ func TestEmptyCallouts(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="tip">
 <summary>
-<p>
-</p>
+
 </summary>
 </details>
 `,
@@ -85,8 +83,7 @@ func TestCalloutContent(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="info">
 <summary>
-<p>
-</p>
+
 </summary>
 <p>Some content here</p>
 </details>
@@ -103,8 +100,7 @@ func TestCalloutContent(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="info">
 <summary>
-<p>
-</p>
+
 </summary>
 <p><strong>Bold</strong> and <em>emphasis</em> formatting still works</p>
 </details>
@@ -123,8 +119,7 @@ func TestCalloutContent(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="info">
 <summary>
-<p>
-</p>
+
 </summary>
 <p>More paragraphs</p>
 <p>In a single callout</p>
@@ -144,8 +139,7 @@ func TestCalloutContent(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="example">
 <summary>
-<p>
- Some title</p>
+ Some title
 </summary>
 <p>More paragraphs</p>
 <p>In a single callout</p>
@@ -166,8 +160,7 @@ func TestCalloutContent(t *testing.T) {
 `,
 		Expected: `<details class="callout" data-callout="example">
 <summary>
-<p>
- Some title</p>
+ Some title
 </summary>
 <p>More paragraphs</p>
 <p>In a single callout</p>

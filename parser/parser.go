@@ -66,7 +66,8 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 		shift := closingBracketIndex + 1
 		titleTextSegment.Start += shift
 		// trim the last newline
-		titleTextSegment.Stop = titleTextSegment.Stop - 1
+		// titleTextSegment.Stop = titleTextSegment.Stop - 1
+
 		// TODO: Rather than leaving the title text empty, supply a capitalized callout type
 		calloutTitle.Lines().Append(titleTextSegment)
 
