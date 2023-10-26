@@ -132,4 +132,46 @@ func TestCalloutContent(t *testing.T) {
 `,
 	}, t)
 
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout with multiple paragraphs and a custom title",
+		Markdown: `
+> [!example] Some title
+> More paragraphs
+> 
+> In a single callout
+`,
+		Expected: `<details class="callout" data-callout="example">
+<summary>
+<p>
+ Some title</p>
+</summary>
+<p>More paragraphs</p>
+<p>In a single callout</p>
+</details>
+`,
+	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout with multiple paragraphs, custom title and a blank line under the title",
+		Markdown: `
+> [!example] Some title
+>
+> More paragraphs
+> 
+> In a single callout
+`,
+		Expected: `<details class="callout" data-callout="example">
+<summary>
+<p>
+ Some title</p>
+</summary>
+<p>More paragraphs</p>
+<p>In a single callout</p>
+</details>
+`,
+	}, t)
 }
