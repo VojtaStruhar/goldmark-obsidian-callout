@@ -1,28 +1,44 @@
-# goldmark-callout
+# goldmark-obsidian-callout
 
-## Documentation
+Extension for the [goldmark](https://github.com/yuin/goldmark) markdown parser. Parses [obsidian-flavored callouts](https://help.obsidian.md/Editing+and+formatting/Callouts). 
 
-The AST is imperfect. It still has the parenting blockquote, like this:
+## Examples
 
-- Blockquote
-  - Callout (`<details>`)
-    - CalloutTitle (`<summary>`)
-    - ...Paragraph
+```markdown
+> [!note]+ Sidenote
+> This is something really interesting
+```
 
-Only in the AST transformer, blockquotes whose first child is a Callout are *dismissed* in a way - no 
-`<blockquote>` element is rendered.
+Gets transformed into:
 
-## Research
-
-Keep details open:
-
-```html
-<details open onclick="return false">
-  <summary>Details</summary>
-  Something small enough to escape casual notice.
+<details class="callout" data-callout="note" open>
+  <summary>Sidenote</summary>
+	<p>This is something <strong>really</strong> interesting</p>
 </details>
 
+```html
+<details class="callout" data-callout="note" open>
+  <summary>Sidenote</summary>
+	<p>This is something <strong>really</strong> interesting</p>
+</details>
 ```
+
+The CSS class and `data-callout` are there to make the callouts compatible with Obsidian stylesheets and themes.
+
+## Features
+
+- [x] Recognizes all Obsidian callout types
+- [x] Custom titles
+- [x] Multiple paragraphs inside the callout
+- [x] Non-collapsible callouts by default *(requires Javascript - preview in browser)*
+- [ ] Nested callouts
+- [ ] Default callout title accoring to the callout type
+
+Contributions are very much welcome!
+
+## Credit
+
+Project bootstrapped by the [mangoubrella/goldmark-figure](https://github.com/mangoumbrella/goldmark-figure) project. Thanks!
 
 ## License
 
