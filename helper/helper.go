@@ -2,6 +2,7 @@ package helper
 
 import (
 	"errors"
+	"fmt"
 )
 
 func IndexOf(byteArray []byte, target byte) (int, error) {
@@ -16,7 +17,7 @@ func IndexOf(byteArray []byte, target byte) (int, error) {
 type CalloutType int
 
 const (
-	Note CalloutType = iota
+	Note CalloutType = iota // Default. If you try to get a CalloutType from CalloutTypeMapping, this is the default
 	Info
 	Abstract
 	Todo
@@ -64,7 +65,7 @@ var CalloutTypeMapping = map[string]CalloutType{
 }
 
 var CalloutTypeStringMapping = map[CalloutType]string{
-	Note:     "Note",
+	Note:     "note",
 	Info:     "info",
 	Tip:      "tip",
 	Abstract: "abstract",
@@ -77,4 +78,28 @@ var CalloutTypeStringMapping = map[CalloutType]string{
 	Bug:      "bug",
 	Example:  "example",
 	Quote:    "quote",
+}
+
+type CalloutOpeningMode int
+
+const (
+	OpenByDefault CalloutOpeningMode = iota
+	ForceOpen                        // default
+	ClosedByDefault
+)
+
+// GetHtmlProps returns html attribute string that should be put in <details> element's props
+// to achieve the desired efect.
+func (state CalloutOpeningMode) GetHtmlProps() string {
+	switch state {
+	case ClosedByDefault:
+		return ""
+	case OpenByDefault:
+		return " open"
+	case ForceOpen:
+		return ` open onclick="return false"`
+	}
+
+	fmt.Println("Unknown CalloutOpeningMode:", state)
+	return ""
 }

@@ -76,15 +76,23 @@ func (r *CalloutHtmlRenderer) renderCallout(w util.BufWriter, source []byte, n g
 	if entering {
 		// note by default
 		calloutType := helper.Note
-		if t, ok := n.Attribute([]byte("type")); ok {
+		if t, ok := n.AttributeString("type"); ok {
 			calloutType = t.(helper.CalloutType)
 		}
 		calloutTypeString := helper.CalloutTypeStringMapping[calloutType]
 
+		openingMode := helper.ForceOpen // default
+		if mode, ok := n.AttributeString("mode"); ok {
+			openingMode = mode.(helper.CalloutOpeningMode)
+		}
+		openingModeHtmlProps := openingMode.GetHtmlProps()
+
 		b := strings.Builder{}
 		b.WriteString("<details class=\"callout\" data-callout=\"")
 		b.WriteString(calloutTypeString)
-		b.WriteString("\">\n")
+		b.WriteString("\"")
+		b.WriteString(openingModeHtmlProps)
+		b.WriteString(">\n")
 
 		_, _ = w.WriteString(b.String())
 	} else {

@@ -1,7 +1,6 @@
 package callout_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/yuin/goldmark"
@@ -15,17 +14,9 @@ var markdown = goldmark.New(
 		callout.ObsidianCallout,
 	),
 )
-var count = 0
-
-func TestAll(t *testing.T) {
-	t.Run("Default Blockquote Behavior", TestBlockquote)
-	t.Run("Empty Callout", TestEmptyCallouts)
-	t.Run("Callouts with content", TestCalloutContent)
-	fmt.Println("Ran", count, "tests total")
-}
 
 func TestBlockquote(t *testing.T) {
-
+	var count = 0
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
 		No:          count,
@@ -42,6 +33,7 @@ func TestBlockquote(t *testing.T) {
 }
 
 func TestEmptyCallouts(t *testing.T) {
+	var count = 0
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
 		No:          count,
@@ -49,7 +41,7 @@ func TestEmptyCallouts(t *testing.T) {
 		Markdown: `
 > [!info] Custom callout title
 `,
-		Expected: `<details class="callout" data-callout="info">
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
 <summary>
  Custom callout title
 </summary>
@@ -64,7 +56,22 @@ func TestEmptyCallouts(t *testing.T) {
 		Markdown: `
 > [!important]
 `,
-		Expected: `<details class="callout" data-callout="tip">
+		Expected: `<details class="callout" data-callout="tip" open onclick="return false">
+<summary>
+
+</summary>
+</details>
+`,
+	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Unknown callout type -> note",
+		Markdown: `
+> [!unknown]
+`,
+		Expected: `<details class="callout" data-callout="note" open onclick="return false">
 <summary>
 
 </summary>
@@ -72,7 +79,8 @@ func TestEmptyCallouts(t *testing.T) {
 `,
 	}, t)
 }
-func TestCalloutContent(t *testing.T) {
+func TestCalloutsWithContent(t *testing.T) {
+	var count = 0
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
 		No:          count,
@@ -81,7 +89,7 @@ func TestCalloutContent(t *testing.T) {
 > [!info]
 > Some content here
 `,
-		Expected: `<details class="callout" data-callout="info">
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
 <summary>
 
 </summary>
@@ -98,7 +106,7 @@ func TestCalloutContent(t *testing.T) {
 > [!info]
 > **Bold** and *emphasis* formatting still works
 `,
-		Expected: `<details class="callout" data-callout="info">
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
 <summary>
 
 </summary>
@@ -117,7 +125,7 @@ func TestCalloutContent(t *testing.T) {
 > 
 > In a single callout
 `,
-		Expected: `<details class="callout" data-callout="info">
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
 <summary>
 
 </summary>
@@ -137,7 +145,7 @@ func TestCalloutContent(t *testing.T) {
 > 
 > In a single callout
 `,
-		Expected: `<details class="callout" data-callout="example">
+		Expected: `<details class="callout" data-callout="example" open onclick="return false">
 <summary>
  Some title
 </summary>
@@ -158,12 +166,66 @@ func TestCalloutContent(t *testing.T) {
 > 
 > In a single callout
 `,
-		Expected: `<details class="callout" data-callout="example">
+		Expected: `<details class="callout" data-callout="example" open onclick="return false">
 <summary>
  Some title
 </summary>
 <p>More paragraphs</p>
 <p>In a single callout</p>
+</details>
+`,
+	}, t)
+}
+
+func TestExpandableCallouts(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Default forced-open callout",
+		Markdown: `
+> [!example] Some title
+> Some content
+`,
+		Expected: `<details class="callout" data-callout="example" open onclick="return false">
+<summary>
+ Some title
+</summary>
+<p>Some content</p>
+</details>
+`,
+	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout closed by default",
+		Markdown: `
+> [!example]- Closed by default
+> Some content
+`,
+		Expected: `<details class="callout" data-callout="example">
+<summary>
+ Closed by default
+</summary>
+<p>Some content</p>
+</details>
+`,
+	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout open by default",
+		Markdown: `
+> [!example]+ Open by default
+> Some content
+`,
+		Expected: `<details class="callout" data-callout="example" open>
+<summary>
+ Open by default
+</summary>
+<p>Some content</p>
 </details>
 `,
 	}, t)

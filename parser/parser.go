@@ -55,18 +55,32 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 			return
 		}
 
-		cName := string(firstLineBytes[openingBracketIndex+1 : closingBracketIndex])
-		cType := helper.CalloutTypeMapping[cName]
-		callout.SetAttribute([]byte("type"), cType)
-
 		node.Parent().ReplaceChild(node.Parent(), node, callout)
 
 		titleTextSegment := lines.At(0)
-		// TODO: handle "+- " after the [!callout_type]
-		shift := closingBracketIndex + 1
-		titleTextSegment.Start += shift
-		// trim the last newline
-		// titleTextSegment.Stop = titleTextSegment.Stop - 1
+		titleTextSegment.Start += closingBracketIndex + 1
+
+		{ // Type of the callout
+			cName := string(firstLineBytes[openingBracketIndex+1 : closingBracketIndex])
+			cType := helper.CalloutTypeMapping[cName]
+			callout.SetAttribute([]byte("type"), cType)
+		}
+
+		{ // Determine the open-close mode of the callout
+			calloutMode := helper.ForceOpen // default
+			if len(firstLineBytes) > closingBracketIndex+1 {
+				letterAfterClosingBracket := firstLineBytes[closingBracketIndex+1] // symbol right after the [!callout]
+
+				if letterAfterClosingBracket == byte('+') {
+					calloutMode = helper.OpenByDefault
+					titleTextSegment.Start += 1
+				} else if letterAfterClosingBracket == byte('-') {
+					calloutMode = helper.ClosedByDefault
+					titleTextSegment.Start += 1
+				}
+			}
+			callout.SetAttribute([]byte("mode"), calloutMode)
+		}
 
 		// TODO: Rather than leaving the title text empty, supply a capitalized callout type
 		calloutTitle.Lines().Append(titleTextSegment)
