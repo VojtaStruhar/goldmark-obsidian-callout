@@ -1,6 +1,7 @@
 package callout_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/yuin/goldmark"
@@ -9,13 +10,21 @@ import (
 	callout "github.com/VojtaStruhar/goldmark-callout"
 )
 
+var markdown = goldmark.New(
+	goldmark.WithExtensions(
+		callout.ObsidianCallout,
+	),
+)
+var count = 0
+
+func TestAll(t *testing.T) {
+	t.Run("Default Blockquote Behavior", TestBlockquote)
+	t.Run("Empty Callout", TestEmptyCallouts)
+	t.Run("Callouts with content", TestCalloutContent)
+	fmt.Println("Ran", count, "tests total")
+}
+
 func TestBlockquote(t *testing.T) {
-	markdown := goldmark.New(
-		goldmark.WithExtensions(
-			callout.ObsidianCallout,
-		),
-	)
-	count := 0
 
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
@@ -30,20 +39,20 @@ func TestBlockquote(t *testing.T) {
 </blockquote>
 `,
 	}, t)
+}
 
+func TestEmptyCallouts(t *testing.T) {
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
 		No:          count,
-		Description: "Callout blockquote with no content",
+		Description: "Callout With custom title",
 		Markdown: `
-> [!info] This is a callout
+> [!info] Custom callout title
 `,
-		Expected: `
-<details class="callout" data-callout="info">
+		Expected: `<details class="callout" data-callout="info">
 <summary>
 <p>
- This is a callout
-</p>
+ Custom callout title</p>
 </summary>
 </details>
 `,
@@ -52,19 +61,35 @@ func TestBlockquote(t *testing.T) {
 	count++
 	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
 		No:          count,
-		Description: "Empty callout - important type",
+		Description: "Empty callout: important = tip alias",
 		Markdown: `
-> [!tip]
+> [!important]
 `,
-		Expected: `
-<details class="callout" data-callout="tip">
+		Expected: `<details class="callout" data-callout="tip">
 <summary>
 <p>
-
 </p>
 </summary>
 </details>
 `,
 	}, t)
-
+}
+func TestCalloutContent(t *testing.T) {
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Callout With custom title",
+		Markdown: `
+> [!info]
+> Some content here
+`,
+		Expected: `<details class="callout" data-callout="info">
+<summary>
+<p>
+</p>
+</summary>
+<p>Some content here</p>
+</details>
+`,
+	}, t)
 }

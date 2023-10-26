@@ -36,6 +36,7 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 	}
 
 	callout := calloutAst.NewCallout()
+	calloutTitle := calloutAst.NewCalloutTitle()
 
 	closingBracketIndex, err := helper.IndexOf(firstLineBytes, byte(']'))
 	if err != nil {
@@ -52,22 +53,24 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 
 	node.Parent().ReplaceChild(node.Parent(), node, callout)
 
-	calloutTitle := calloutAst.NewCalloutTitle()
-	titleText := lines.At(0)
+	titleTextSegment := lines.At(0)
 	// TODO: handle "+- " after the [!callout_type]
 	shift := closingBracketIndex + 1
-
-	titleText.Start += shift
-	calloutTitle.Lines().Append(titleText)
+	titleTextSegment.Start += shift
+	// trim the last newline
+	titleTextSegment.Stop = titleTextSegment.Stop - 1
+	// TODO: Rather than leaving the title text empty, supply a capitalized callout type
+	calloutTitle.Lines().Append(titleTextSegment)
 
 	callout.AppendChild(callout, calloutTitle)
 
+	// If the callout has some content
 	if lines.Len() >= 2 {
-		figureCaption := calloutAst.NewCalloutTitle()
+		figureCaption := gast.NewParagraph()
 		for i := 1; i < lines.Len(); i++ {
 			seg := lines.At(i)
 			if i == lines.Len()-1 {
-				// trim last newline(\n)
+				// trim last newline (\n)
 				seg.Stop = seg.Stop - 1
 			}
 			figureCaption.Lines().Append(seg)
