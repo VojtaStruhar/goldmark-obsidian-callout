@@ -15,6 +15,8 @@ var KindCallout = gast.NewNodeKind("Callout")
 // A Callout struct represents a table of Markdown(GFM) text.
 type Callout struct {
 	gast.BaseBlock
+	Children []*Callout
+	Parent   *Callout
 }
 
 // Kind implements Node.Kind.
@@ -30,7 +32,10 @@ func (n *Callout) Dump(source []byte, level int) {
 
 // NewCallout returns a new Table node.
 func NewCallout() *Callout {
-	return &Callout{}
+	return &Callout{
+		Children: []*Callout{},
+		Parent:   nil,
+	}
 }
 
 // KindCalloutTitle is a NodeKind of the CalloutTitle node.

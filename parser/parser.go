@@ -82,7 +82,13 @@ func (b *calloutParagraphTransformer) Transform(node *gast.Paragraph, reader tex
 			callout.SetAttribute([]byte("mode"), calloutMode)
 		}
 
-		// TODO: Rather than leaving the title text empty, supply a capitalized callout type
+		// Set default title if no custom title is provided
+		if titleTextSegment.Len() == 0 {
+			calloutType := callout.AttributeString("type").(helper.CalloutType)
+			defaultTitle := helper.CalloutTypeStringMapping[calloutType]
+			titleTextSegment = text.NewSegment([]byte(defaultTitle))
+		}
+
 		calloutTitle.Lines().Append(titleTextSegment)
 
 		callout.AppendChild(callout, calloutTitle)
@@ -115,16 +121,29 @@ func NewCalloutAstTransformer() parser.ASTTransformer {
 
 func (a *calloutAstTransformer) Transform(node *gast.Document, reader text.Reader, pc parser.Context) {
 
+	var transformBlockquote func(*gast.Blockquote, *calloutAst.Callout)
+	transformBlockquote = func(blockquote *gast.Blockquote, parentCallout *calloutAst.Callout) {
+		current := blockquote.FirstChild()
+		for current != nil {
+			if current.Kind() == gast.KindBlockquote {
+				childCallout := calloutAst.NewCallout()
+				parentCallout.AppendChild(parentCallout, childCallout)
+				transformBlockquote(current.(*gast.Blockquote), childCallout)
+			} else {
+				parentCallout.AppendChild(parentCallout, current)
+			}
+			current = current.NextSibling()
+		}
+	}
+
 	current := node.FirstChild()
-	// TODO: Extract the walking-replacing into a function to allow nested callouts (not used often..)
-	// check if current is of type gast.BlockQuote
 	for current != nil {
 		if current.Kind() == gast.KindBlockquote {
-			// check if the blockquote has a child of type callout
-			// if yes, then remove the blockquote and replace it with a callout
-			if current.FirstChild().Kind() == calloutAst.KindCallout {
-				// replace the blockquote with the callout
-				node.ReplaceChild(node, current, current.FirstChild())
+			blockquote := current.(*gast.Blockquote)
+			if blockquote.FirstChild().Kind() == calloutAst.KindCallout {
+				callout := blockquote.FirstChild().(*calloutAst.Callout)
+				node.ReplaceChild(node, blockquote, callout)
+				transformBlockquote(blockquote, callout)
 			}
 		}
 		current = current.NextSibling()

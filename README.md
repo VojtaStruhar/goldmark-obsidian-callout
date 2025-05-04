@@ -31,8 +31,8 @@ The CSS class and `data-callout` are there to make the callouts compatible with 
 - [x] Custom titles
 - [x] Multiple paragraphs inside the callout
 - [x] Non-collapsible callouts by default *(requires Javascript - preview in browser)*
-- [ ] Nested callouts
-- [ ] Default callout title accoring to the callout type
+- [x] Nested callouts
+- [x] Default callout title accoring to the callout type
 
 Contributions are very much welcome!
 

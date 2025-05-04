@@ -230,3 +230,68 @@ func TestExpandableCallouts(t *testing.T) {
 `,
 	}, t)
 }
+
+func TestNestedCallouts(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Nested callouts",
+		Markdown: `
+> [!note] Parent Callout
+> Some content in the parent callout
+> > [!info] Nested Callout
+> > Some content in the nested callout
+`,
+		Expected: `<details class="callout" data-callout="note" open onclick="return false">
+<summary>
+ Parent Callout
+</summary>
+<p>Some content in the parent callout</p>
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ Nested Callout
+</summary>
+<p>Some content in the nested callout</p>
+</details>
+</details>
+`,
+	}, t)
+}
+
+func TestDefaultCalloutTitles(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Default callout title for info type",
+		Markdown: `
+> [!info]
+> Some content here
+`,
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ Info
+</summary>
+<p>Some content here</p>
+</details>
+`,
+	}, t)
+
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Default callout title for note type",
+		Markdown: `
+> [!note]
+> Some content here
+`,
+		Expected: `<details class="callout" data-callout="note" open onclick="return false">
+<summary>
+ Note
+</summary>
+<p>Some content here</p>
+</details>
+`,
+	}, t)
+}
