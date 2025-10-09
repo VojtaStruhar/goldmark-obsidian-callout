@@ -79,6 +79,7 @@ func TestEmptyCallouts(t *testing.T) {
 `,
 	}, t)
 }
+
 func TestCalloutsWithContent(t *testing.T) {
 	var count = 0
 	count++
@@ -226,6 +227,73 @@ func TestExpandableCallouts(t *testing.T) {
  Open by default
 </summary>
 <p>Some content</p>
+</details>
+`,
+	}, t)
+}
+
+func TestMultipleCallouts(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Multiple callouts",
+		Markdown: `
+> [!info] First callout
+> Some content in the first callout
+
+> [!info] Second callout
+> Some content in the second callout
+`,
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ First callout
+</summary>
+<p>Some content in the first callout</p>
+</details>
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ Second callout
+</summary>
+<p>Some content in the second callout</p>
+</details>
+`,
+	}, t)
+}
+
+func TestMultipleCalloutsWithBlockquote(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Multiple callouts with a blockquote in between",
+		Markdown: `
+> [!info] First callout
+> Some content in the first callout
+
+> All we are is dust in the wind...dude.
+> - Ted 
+
+> [!info] Second callout
+> Some content in the second callout
+`,
+		Expected: `<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ First callout
+</summary>
+<p>Some content in the first callout</p>
+</details>
+<blockquote>
+<p>All we are is dust in the wind...dude.</p>
+<ul>
+<li>Ted</li>
+</ul>
+</blockquote>
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ Second callout
+</summary>
+<p>Some content in the second callout</p>
 </details>
 `,
 	}, t)

@@ -115,18 +115,19 @@ func NewCalloutAstTransformer() parser.ASTTransformer {
 
 func (a *calloutAstTransformer) Transform(node *gast.Document, reader text.Reader, pc parser.Context) {
 
-	current := node.FirstChild()
-	// TODO: Extract the walking-replacing into a function to allow nested callouts (not used often..)
-	// check if current is of type gast.BlockQuote
-	for current != nil {
+	// walk top-level children — but capture next before we mutate the list
+	for current := node.FirstChild(); current != nil; {
+		next := current.NextSibling()
+
 		if current.Kind() == gast.KindBlockquote {
-			// check if the blockquote has a child of type callout
-			// if yes, then remove the blockquote and replace it with a callout
-			if current.FirstChild().Kind() == calloutAst.KindCallout {
-				// replace the blockquote with the callout
-				node.ReplaceChild(node, current, current.FirstChild())
+			firstChild := current.FirstChild()
+			if firstChild != nil && firstChild.Kind() == calloutAst.KindCallout {
+				// replace the blockquote with its callout child
+				// capture next before ReplaceChild (already done above)
+				node.ReplaceChild(node, current, firstChild)
 			}
 		}
-		current = current.NextSibling()
+
+		current = next
 	}
 }
