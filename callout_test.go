@@ -298,3 +298,97 @@ func TestMultipleCalloutsWithBlockquote(t *testing.T) {
 `,
 	}, t)
 }
+
+func TestNestedCallouts(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Multiple callouts",
+		Markdown: `
+>[!info] This is a callout
+>Text for the callout
+>>[!info] This is inside the outer callout
+>>More text inside the callout.
+		`,
+		Expected: `
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ This is a callout
+</summary>
+<p>Text for the callout</p>
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ This is inside the outer callout
+</summary>
+<p>More text inside the callout.</p>
+</details>
+</details>
+		`,
+	}, t)
+}
+func TestNestedBlockquoteInsideCallout(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Multiple callouts",
+		Markdown: `
+>[!info] This is a callout
+>Text for the callout
+>>This is a blockquote inside the callout
+>
+>More text inside the callout.
+		`,
+		Expected: `
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ This is a callout
+</summary>
+<p>Text for the callout</p>
+<blockquote>
+<p>This is a blockquote inside the callout</p>
+</blockquote>
+<p>More text inside the callout.</p>
+</details>
+		`,
+	}, t)
+}
+func TestNestedBlockquoteInsideNestedCallout(t *testing.T) {
+	var count = 0
+	count++
+	testutil.DoTestCase(markdown, testutil.MarkdownTestCase{
+		No:          count,
+		Description: "Multiple callouts",
+		Markdown: `
+>[!info] This is a callout
+>Text for the callout
+>>[!info] This is an inner callout
+>>Text inside the inner clalout
+>>>This is a blockquote inside the callout
+>>
+>>More text inside the inner callout.
+>
+>More text inside the outer callout
+		`,
+		Expected: `
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ This is a callout
+</summary>
+<p>Text for the callout</p>
+<details class="callout" data-callout="info" open onclick="return false">
+<summary>
+ This is an inner callout
+</summary>
+<p>Text inside the inner clalout</p>
+<blockquote>
+<p>This is a blockquote inside the callout</p>
+</blockquote>
+<p>More text inside the inner callout.</p>
+</details>
+<p>More text inside the outer callout</p>
+</details>
+		`,
+	}, t)
+}
