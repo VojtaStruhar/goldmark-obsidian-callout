@@ -115,18 +115,45 @@ func NewCalloutAstTransformer() parser.ASTTransformer {
 
 func (a *calloutAstTransformer) Transform(node *gast.Document, reader text.Reader, pc parser.Context) {
 
-	current := node.FirstChild()
-	// TODO: Extract the walking-replacing into a function to allow nested callouts (not used often..)
-	// check if current is of type gast.BlockQuote
-	for current != nil {
-		if current.Kind() == gast.KindBlockquote {
-			// check if the blockquote has a child of type callout
-			// if yes, then remove the blockquote and replace it with a callout
-			if current.FirstChild().Kind() == calloutAst.KindCallout {
-				// replace the blockquote with the callout
-				node.ReplaceChild(node, current, current.FirstChild())
+	// Recursively walk every node and replace any blockquote whose first child
+	// is a Callout with the Callout node itself. When replacing, move the
+	// remaining children of the blockquote into the callout so nested callouts
+	// (>> style) are preserved.
+	var replace func(parent gast.Node)
+	replace = func(parent gast.Node) {
+		for current := parent.FirstChild(); current != nil; {
+			next := current.NextSibling()
+
+			if current.Kind() == gast.KindBlockquote {
+				firstChild := current.FirstChild()
+				if firstChild != nil && firstChild.Kind() == calloutAst.KindCallout {
+					// Move all siblings (children of the blockquote) after the first child
+					// into the callout so their content is not dropped when we replace
+					// the blockquote with the callout.
+					for child := firstChild.NextSibling(); child != nil; {
+						childNext := child.NextSibling()
+						// detach child from the blockquote
+						current.RemoveChild(current, child)
+						// append it to the callout
+						firstChild.AppendChild(firstChild, child)
+						child = childNext
+					}
+					// replace the blockquote with the callout (firstChild)
+					parent.ReplaceChild(parent, current, firstChild)
+					// continue traversal inside the moved callout
+					replace(firstChild)
+				} else {
+					// Recurse into the blockquote to find nested callouts deeper down
+					replace(current)
+				}
+			} else {
+				// Recurse into other node types as well to find blockquotes containing callouts at any depth
+				replace(current)
 			}
+
+			current = next
 		}
-		current = current.NextSibling()
 	}
+
+	replace(node)
 }
